@@ -2,13 +2,31 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+import smtplib
+EMAIL_ADDRESS = 'rudraprasadritu2006@gmail.com'
+EMAIL_PASSWORD = 'tveb ivfq ngro kwhv'
+RECIPIENTS = 'rudraprasadritu2006@gmail.com'
+def send_email(name):
+    subject = "New login name submitted"
+    body = f"Someone signed in with name: {name}"
+    message = f"Subject: {subject}\n\n{body}"
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_ADDRESS, RECIPIENTS, message)
+        server.quit()
+    except Exception as e:
+        print("Email error:", e)
+
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'rudraprasadhotta'
 
 
 class LoginForm(FlaskForm):
-    user_id = StringField('ID', validators=[DataRequired()])
+    user_id = StringField('Name', validators=[DataRequired()])
     submit = SubmitField('Signin')
 
 @app.route('/')
@@ -20,17 +38,16 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user_id = form.user_id.data
+        name = form.user_id.data
+        send_email(name)
 
-        # only allow a specific ID
-        if user_id == "ALTO":
-            session['authenticated'] = True
-            return redirect(url_for('secret'))
-        else:
-            flash("Invalid ID! Try again.")
-            return redirect(url_for('login'))
+        return redirect(url_for('secret'))
 
-    return render_template('login.html', form=form)
+    else:
+        return render_template('login.html', form=form)
+
+
+
 
 
 @app.route('/secret')
@@ -39,5 +56,6 @@ def secret():
         flash("You must sign in with the correct ID first!")
         return redirect(url_for('login'))
     return render_template('secret.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
