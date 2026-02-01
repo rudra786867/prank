@@ -11,7 +11,7 @@ def send_email(name):
     body = f"Someone signed in with name: {name}"
     message = f"Subject: {subject}\n\n{body}"
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server = smtplib.SMTP("smtp.gmail.com", 2525)
         server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.sendmail(EMAIL_ADDRESS, RECIPIENTS, message)
