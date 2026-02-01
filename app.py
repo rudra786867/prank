@@ -23,7 +23,7 @@ def login():
         user_id = form.user_id.data
 
         # only allow a specific ID
-        if user_id == "rudra123":
+        if user_id == "ALTO":
             session['authenticated'] = True
             return redirect(url_for('secret'))
         else:
