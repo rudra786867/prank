@@ -39,12 +39,18 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         name = form.user_id.data
-        send_email(name)
+        session['authenticated'] = True
+
+        try:
+            send_email(name)
+        except Exception as e:
+            print("Email failed:", e)
+            # still let the user continue
 
         return redirect(url_for('secret'))
 
-    else:
-        return render_template('login.html', form=form)
+    return render_template('login.html', form=form)
+
 
 
 
